@@ -13,7 +13,24 @@ The work presented in this paper is an extension of the previous multichannel so
    - Sharath Adavanne, Archontis Politis and Tuomas Virtanen, 'Direction of arrival estimation for multiple sound sources using convolutional recurrent neural network' submitted at European Signal Processing Conference (EUSIPCO 2018)
 
 ## More about SELDnet
+The proposed SELDnet architecture is as shown below. The input is the multichannel audio, from which the phase and magnitude components are extracted and used as separate features. The proposed method takes a sequence of consecutive spectrogram frames as input and predicts all the sound event classes active for each of the input frame along with their respective spatial location, producing the temporal activity and DOA trajectory for each sound event class. A convolutional recurrent neural network (CRNN) is used to map the frame sequence to the two outputs in parallel. At the first output, SED is performed as a multi-label multi-class classification task, allowing the network to simultaneously estimate the presence of multiple sound events for each frame. At the second output, DOA estimates in the continuous 3D space are obtained as a multi-output regression task, where each sound event class is associated with three regressors that estimate the 3D Cartesian coordinates x, y and z of the DOA on a unit sphere around the microphone.
 
+<p align="center">
+   <img src="https://github.com/sharathadavanne/seld-net/blob/master/images/CRNN_JSTSP.jpg" width="400" title="SELDnet Architecture">
+</p>
+
+The SED output of the network is in the continuous range of [0 1] for each sound event in the dataset, and this value is thresholded to obtain a binary decision for the respective sound event activity as shown in figure below. Finally, the respective DOA estimates for these active sound event classes provide their spatial locations.
+
+<p align="center">
+   <img src="https://github.com/sharathadavanne/seld-net/blob/master/images/JSTSP_output_format.jpg" width="400" title="SELDnet output format">
+</p>
+
+The figure below visualizes the SELDnet input and outputs for simulated datasets with maximum one (O1) and two (O2) temporally overlapping sound events. The horizontal-axis of all sub-plots for a given dataset represents the same time frames, the vertical-axis for spectrogram sub-plot represents the frequency bins, vertical-axis for SED reference and prediction sub-plots represents the unique sound event class identifier, and for the DOA reference and prediction sub-plots, it represents the distance from the origin along the respective axes. The 'o' markers in left figure and '•' markers in right figure visualize both the groundtruth labels and predictions of DOA and SED for O1 and O2 datasets. The − markers in the left figure visualizes the results for test data with unseen DOA labels (shifted by 5 degree along azimuth and elevation). The figures represents each sound event class and its associated DOA outputs with a unique color.
+
+<p align="center">
+   <img src="https://github.com/sharathadavanne/seld-net/blob/master/images/echoic0_ov1_split1_regr3_3d0_19465735_plus5.jpg" width="400" title="dataset with maximum one (O1) temporally overlapping sound events">
+   <img src="https://github.com/sharathadavanne/seld-net/blob/master/images/echoic0_ov2_split1_regr3_3d0_19425208.jpg" width="400" title="dataset with maximum two (O2) temporally overlapping sound events">
+</p>
 
 ## Getting Started
 

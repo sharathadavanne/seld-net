@@ -7,8 +7,8 @@ license or royalty fees, to use and copy the code for the Sound Event
 Localization and Detection using Convolutional Recurrent Neural Network
 method/architecture, present in the GitHub repository with the handle
 seld-net, (“Work”) described in the paper with title "Sound event
-localization and detection of overlapping sources in three dimensions
-using convolutional recurrent neural network" and composed of files with
+localization and detection of overlapping sources using 
+convolutional recurrent neural network" and composed of files with
 code in the Python programming language. This grant is only for experimental and
 non-commercial purposes, provided that the copyright notice in its entirety
 appear in all copies of this Work, and the original source of this Work,

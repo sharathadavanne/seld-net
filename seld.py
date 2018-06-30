@@ -1,3 +1,7 @@
+#
+# A wrapper script that trains the SELDnet. The training stops when the SELD error (check paper) stops improving.
+#
+
 import os
 import sys
 import numpy as np
@@ -66,29 +70,41 @@ def main(argv):
         second input: task_id - (optional) To chose the system configuration in parameters.py. 
                                 (default) uses default parameters
     """
-
+    if len(argv) != 3:
+        print('\n\n')
+        print('-------------------------------------------------------------------------------------------------------')
+        print('The code expected two inputs')
+        print('\t>> python seld.py <job-id> <task-id>')
+        print('\t\t<job-id> is a unique identifier which is used for output filenames (models, training plots). '
+              'You can use any number or string for this.')
+        print('\t\t<task-id> is used to choose the user-defined parameter set from parameter.py')
+        print('Using default inputs for now')
+        print('-------------------------------------------------------------------------------------------------------')
+        print('\n\n')
     # use parameter set defined by user
-    params = parameter.get_params('1' if len(argv) < 3 else argv[-1])
+    task_id = '1' if len(argv) < 3 else argv[-1]
+    params = parameter.get_params(task_id)
+
     job_id = 1 if len(argv) < 2 else argv[1]
 
     model_dir = 'models/'
     utils.create_folder(model_dir)
     unique_name = '{}_ov{}_split{}_{}{}_3d{}_{}'.format(
-        params['echoic'], params['overlap'], params['split'], params['mode'], params['weakness'],
+        params['dataset'], params['overlap'], params['split'], params['mode'], params['weakness'],
         int(params['cnn_3d']), job_id
     )
     unique_name = os.path.join(model_dir, unique_name)
     print("unique_name: {}\n".format(unique_name))
 
     data_gen_train = cls_data_generator.DataGenerator(
-        echoic=params['echoic'], ov=params['overlap'], split=params['split'], db=params['db'], nfft=params['nfft'],
+        dataset=params['dataset'], ov=params['overlap'], split=params['split'], db=params['db'], nfft=params['nfft'],
         batch_size=params['batch_size'], seq_len=params['sequence_length'], classifier_mode=params['mode'],
         weakness=params['weakness'], datagen_mode='train', cnn3d=params['cnn_3d'], xyz_def_zero=params['xyz_def_zero'],
         azi_only=params['azi_only']
     )
 
     data_gen_test = cls_data_generator.DataGenerator(
-        echoic=params['echoic'], ov=params['overlap'], split=params['split'], db=params['db'], nfft=params['nfft'],
+        dataset=params['dataset'], ov=params['overlap'], split=params['split'], db=params['db'], nfft=params['nfft'],
         batch_size=params['batch_size'], seq_len=params['sequence_length'], classifier_mode=params['mode'],
         weakness=params['weakness'], datagen_mode='test', cnn3d=params['cnn_3d'], xyz_def_zero=params['xyz_def_zero'],
         azi_only=params['azi_only'], shuffle=False

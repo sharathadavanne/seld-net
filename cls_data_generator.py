@@ -1,3 +1,7 @@
+#
+# Data generator for training the SELDnet
+#
+
 import os
 import numpy as np
 import cls_feature_class
@@ -8,16 +12,16 @@ import random
 
 class DataGenerator(object):
     def __init__(
-            self, datagen_mode='train', echoic='anechoic', ov=1, split=1, db=30, batch_size=32, seq_len=64,
+            self, datagen_mode='train', dataset='ansim', ov=1, split=1, db=30, batch_size=32, seq_len=64,
             shuffle=True, nfft=512, classifier_mode='regr', weakness=0, cnn3d=False, xyz_def_zero=False, extra_name='',
-            azi_only = False
+            azi_only=False
     ):
         self._datagen_mode = datagen_mode
         self._classifier_mode = classifier_mode
         self._batch_size = batch_size
         self._seq_len = seq_len
         self._shuffle = shuffle
-        self._feat_cls = cls_feature_class.FeatureClass(echoic=echoic, ov=ov, split=split, db=db, nfft=nfft)
+        self._feat_cls = cls_feature_class.FeatureClass(dataset=dataset, ov=ov, split=split, db=db, nfft=nfft)
         self._label_dir = self._feat_cls.get_label_dir(classifier_mode, weakness, extra_name)
         self._feat_dir = self._feat_cls.get_normalized_feat_dir(extra_name)
         self._thickness = weakness
@@ -52,11 +56,11 @@ class DataGenerator(object):
         )
 
         print(
-            'echoic: {}, ov: {}, split: {}\n'
+            'Dataset: {}, ov: {}, split: {}\n'
             'batch_size: {}, seq_len: {}, shuffle: {}\n'
             'label_dir: {}\n '
             'feat_dir: {}\n'.format(
-                echoic, ov, split,
+                dataset, ov, split,
                 self._batch_size, self._seq_len, self._shuffle,
                 self._label_dir, self._feat_dir
             )

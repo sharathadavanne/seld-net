@@ -1,3 +1,8 @@
+#
+# Implements the core metrics from sound event detection evaluation module http://tut-arg.github.io/sed_eval/ and
+# the DOA metrics explained in the SELDnet paper
+#
+
 import numpy as np
 from sklearn.metrics import confusion_matrix
 from IPython import embed

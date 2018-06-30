@@ -1,3 +1,7 @@
+# Contains routines for labels creation, features extraction and normalization
+#
+
+
 import os
 import numpy as np
 import scipy.io.wavfile as wav
@@ -10,22 +14,20 @@ plot.switch_backend('agg')
 
 
 class FeatureClass:
-    def __init__(self, echoic='anechoic', ov=3, split=1, nfft=1024, db=30, wav_extra_name='', desc_extra_name=''):
+    def __init__(self, dataset='ansim', ov=3, split=1, nfft=1024, db=30, wav_extra_name='', desc_extra_name=''):
 
-        if echoic == 'anechoic':
+        # TODO: Change the path according to your machine.
+        # TODO: It should point to a folder which consists of sub-folders for audio and metada
+        if dataset == 'ansim':
             self._base_folder = os.path.join('/wrk/adavanne/DONOTREMOVE', 'doa_data/')
-        elif echoic == 'echoic':
+        elif dataset == 'resim':
             self._base_folder = os.path.join('/proj/asignal/TUT_SELD/', 'doa_data_echoic/')
-        elif echoic == 'circ':
+        elif dataset == 'cansim':
             self._base_folder = os.path.join('/proj/asignal/TUT_SELD/', 'doa_circdata/')
-        elif echoic == 'circrev':
+        elif dataset == 'cresim':
             self._base_folder = os.path.join('/proj/asignal/TUT_SELD/', 'doa_circdata_echoic/')
-        elif echoic == 'seld':
+        elif dataset == 'real':
             self._base_folder = os.path.join('/proj/asignal/TUT_SELD/', 'tut_seld_data/')
-        elif echoic == 'bigseld':
-            self._base_folder = os.path.join('/proj/asignal/TUT_SELD/', 'tut_seld_bigdata/')
-        elif echoic == 'bigseldamb':
-            self._base_folder = os.path.join('/proj/asignal/TUT_SELD/', 'tut_seld_bigdata_amb/')
 
         # Input directories
         self._aud_dir = os.path.join(self._base_folder, 'wav_ov{}_split{}_{}db{}'.format(ov, split, db, wav_extra_name))
@@ -36,6 +38,7 @@ class FeatureClass:
         self._feat_dir = None
         self._feat_dir_norm = None
 
+        # Local parameters
         self._mode = None
         self._ov = ov
         self._split = split
@@ -43,15 +46,19 @@ class FeatureClass:
         self._nfft = nfft
         self._win_len = self._nfft
         self._hop_len = self._nfft/2
-        self._echoic = echoic
+        self._dataset = dataset
         self._eps = np.spacing(np.float(1e-16))
-        if 'circ' in self._echoic:
+
+        # If circular-array 8 channels else 4 for Ambisonic
+        if 'c' in self._dataset:
             self._nb_channels = 8
         else:
             self._nb_channels = 4
 
+        # Sound event classes dictionary
         self._unique_classes = dict()
-        if 'seld' in self._echoic:
+        if 'real' in self._dataset:
+            # Urbansound8k sound events
             self._unique_classes = \
                 {
                     '1': 0,
@@ -63,8 +70,8 @@ class FeatureClass:
                     '8': 6,
                     '9': 7
                 }
-            self._fs = 48000
         else:
+            # DCASE 2016 Task 2 sound events
             self._unique_classes = \
                 {
                     'clearthroat': 2,
@@ -79,8 +86,8 @@ class FeatureClass:
                     'phone': 3,
                     'speech': 5
                 }
-            self._fs = 44100
 
+        self._fs = 44100
         self._frame_res = self._fs / float(self._hop_len)
         self._hop_len_s = self._nfft/2.0/self._fs
         self._nb_frames_1s = int(1 / self._hop_len_s)
@@ -103,7 +110,7 @@ class FeatureClass:
             print('ERROR: chosen default_ele value {} should not exist in ele_list'.format(self._default_ele))
             exit()
 
-        self._audio_max_len_samples = 30 * self._fs  # TODO: Fix the audio generation code to always generate 30s of
+        self._audio_max_len_samples = 30 * self._fs  # TODO: Fix the audio synthesis code to always generate 30s of
         # audio. Currently it generates audio till the last active sound event, which is not always 30s long. This is a
         # quick fix to overcome that. We need this because, for processing and training we need the length of features
         # to be fixed.
@@ -151,7 +158,7 @@ class FeatureClass:
         fid.next()
         for line in fid:
             split_line = line.strip().split(',')
-            if 'seld' in self._echoic:
+            if 'real' in self._dataset:
                 desc_file['class'].append(split_line[0].split('.')[0].split('-')[1])
             else:
                 desc_file['class'].append(split_line[0].split('.')[0][:-3])

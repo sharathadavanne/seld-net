@@ -1,3 +1,9 @@
+# Parameters used in the feature extraction, neural network model, and training the SELDnet can be changed here.
+#
+# Ideally, do not change the values of the default parameters. Create separate cases with unique <task-id> as seen in
+# the code below (if-else loop) and use them. This way you can easily reproduce a configuration on a later time.
+
+
 def get_params(argv):
     print("SET: {}".format(argv))
     # ########### default parameters ##############
@@ -6,7 +12,7 @@ def get_params(argv):
         azi_only=True,      # Estimate Azimuth only
 
         # Dataset loading parameters
-        echoic='anechoic',  # Dataset to use: seld, bigseld, bigseldamb, echoic, anechoic, circ, circrev
+        dataset='ansim',    # Dataset to use: ansim, resim, cansim, cresim, real
         overlap=1,         # maximum number of overlapping sound events [1, 2, 3]
         split=1,           # Cross validation split [1, 2, 3]
         db=30,             # SNR of sound events.
@@ -34,34 +40,44 @@ def get_params(argv):
 
     # ########### User defined parameters ##############
     if argv == '1':
-        print("Using default parameters")
+        print("USING DEFAULT PARAMETERS\n")
+
+    # Quick test
+    elif argv == '999':
+        print("QUICK TEST MODE\n")
+        params['quick_test'] = True
+        params['nb_epochs'] = 2
 
     # Different datasets
-    elif argv == '2':  # anechoic data set
-        params['echoic'] = 'anechoic'
+    elif argv == '2':  # anechoic simulated Ambisonic data set
+        params['dataset'] = 'ansim'
         params['sequence_length'] = 512
 
-    elif argv == '3':  # echoic data set
-        params['echoic'] = 'echoic'
+    elif argv == '3':  # reverberant simulated Ambisonic data set
+        params['dataset'] = 'resim'
         params['sequence_length'] = 256
 
-    elif argv == '4':  # circ data set
-        params['echoic'] = 'circ'
+    elif argv == '4':  # anechoic simulated circular-array data set
+        params['dataset'] = 'cansim'
         params['sequence_length'] = 256
 
-    elif argv == '5':  # circrev data set
-        params['echoic'] = 'circrev'
+    elif argv == '5':  # reverberant simulated circular-array data set
+        params['dataset'] = 'cresim'
         params['sequence_length'] = 256
+
+    elif argv == '6':  # real-life Ambisonic data set
+        params['dataset'] = 'real'
+        params['sequence_length'] = 512
 
     # anechoic circular array data set split 1, overlap 3
-    elif argv == '6':  #
-        params['echoic'] = 'circ'
+    elif argv == '7':  #
+        params['dataset'] = 'cansim'
         params['overlap'] = 3
         params['split'] = 1
 
     # anechoic Ambisonic data set with sequence length 64 and batch size 32
-    elif argv == '7':  #
-        params['echoic'] = 'anechoic'
+    elif argv == '8':  #
+        params['dataset'] = 'ansim'
         params['sequence_length'] = 64
         params['batch_size'] = 32
 

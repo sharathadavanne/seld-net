@@ -1,7 +1,7 @@
 
 # Sound event localization and detection of overlapping sources using convolutional recurrent neural network (SELDnet)
 Sound event localization and detection (SELD) is the combined task of identifying the temporal onset and offset of a sound event, tracking the spatial location when active, and further associating a textual label describing the sound event.
-The paper describing the SELDnet can be found [here](http://www.cs.tut.fi/~adavanne/papers/Adavanne_SELD_preprint.pdf 'PDF'). We are releasing a simple vanila code without much frills and the related datasets here.
+The paper describing the SELDnet can be found [here](https://arxiv.org/abs/1807.00129 'Paper on arxiv'). We are releasing a simple vanila code without much frills and the related datasets here.
 The work presented in this paper is an extension of the previous multichannel sound event detection, and direction of arrival estimation papers listed below.
 
 1. Sound event detection (SED)

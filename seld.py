@@ -18,7 +18,7 @@ plot.switch_backend('agg')
 
 def collect_test_labels(_data_gen_test, _data_out, classification_mode, quick_test):
     # Collecting ground truth for test data
-    nb_batch = 5 if quick_test else _data_gen_test.get_total_batches_in_data()
+    nb_batch = 2 if quick_test else _data_gen_test.get_total_batches_in_data()
 
     batch_size = _data_out[0][0]
     gt_sed = np.zeros((nb_batch * batch_size, _data_out[0][1], _data_out[0][2]))
@@ -148,13 +148,14 @@ def main(argv):
     val_loss = np.zeros(params['nb_epochs'])
     doa_loss = np.zeros((params['nb_epochs'], 6))
     sed_loss = np.zeros((params['nb_epochs'], 2))
-    for epoch_cnt in range(params['nb_epochs']):
+    nb_epoch = 2 if params['quick_test'] else params['nb_epochs']
+    for epoch_cnt in range(nb_epoch):
         start = time.time()
         hist = model.fit_generator(
             generator=data_gen_train.generate(),
-            steps_per_epoch=5 if params['quick_test'] else data_gen_train.get_total_batches_in_data(),
+            steps_per_epoch=2 if params['quick_test'] else data_gen_train.get_total_batches_in_data(),
             validation_data=data_gen_test.generate(),
-            validation_steps=5 if params['quick_test'] else data_gen_test.get_total_batches_in_data(),
+            validation_steps=2 if params['quick_test'] else data_gen_test.get_total_batches_in_data(),
             use_multiprocessing=True,
             epochs=1,
             verbose=0
@@ -164,7 +165,7 @@ def main(argv):
 
         pred = model.predict_generator(
             generator=data_gen_test.generate(),
-            steps=5 if params['quick_test'] else data_gen_test.get_total_batches_in_data(),
+            steps=2 if params['quick_test'] else data_gen_test.get_total_batches_in_data(),
             use_multiprocessing=True,
             verbose=2
         )

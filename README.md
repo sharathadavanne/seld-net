@@ -69,22 +69,30 @@ pip install -r requirements.txt
 
 
 ### Training the SELDnet on the datasets
-The SELDnet code trains the network for a given overlap (ov1, ov2 or ov3) and split (split1, split2 or split3) at a time. In order to quickly train SELDnet follow the steps below.
+The SELDnet code trains the network for a given dataset (ansim, resim, cansim, cresim or real), overlap (ov1, ov2 or ov3) and split (split1, split2 or split3) at a time. In order to quickly train SELDnet follow the steps below.
 
-* For the chosen dataset, overlap and split, download the respective zip file. This contains both the audio files and the respective metadata. Unzip the files under the same 'base_folder/', ie, if you are downloading overlap 1 and split 1 of the dataset, then the 'base_folder/' should have two folders - 'wav_ov1_split1_30db/' and 'desc_ov1_split1/' after unzipping.
+* For the chosen dataset (ansim or resim or ..), overlap (1, 2 or 3) and split (1, 2 or 3), download the respective zip file. This contains both the audio files and the respective metadata. Unzip the files under the same 'base_folder/', ie, if you are downloading overlap 1 and split 1 of the ansim dataset, then the 'base_folder/' should have two folders - 'wav_ov1_split1_30db/' and 'desc_ov1_split1/' after unzipping.
 
-* Now update the dataset path in cls_feature_class.py script (`self._base_folder = 'base_folder/'`). The normalized features, and labels are written in the same folder, so make sure you have sufficient space for it.
+* Now update the respective dataset path in cls_feature_class.py script. For the above example, you will change line 22 to `self._base_folder = 'base_folder/'` (below `dataset == 'ansim'`). The normalized features, and labels are written in the same folder, so make sure you have sufficient space for it.
 
-* Update the parameters `overlap` and `split` in parameter.py script. You can now train the SELDnet using default parameters using
+* Extract features from the downloaded dataset by running the batch_feature_extraction.py script. First, update the dataset_name, overlap and split values based on the downloaded dataset. See the python file for more comments. You can now run the script as shown below. This will create a new folder inside the 'base_folder/' and dump the normalized features here. Since feature extraction is a one-time thing, this script is standalone and does not use the parameter.py file. As you can see in the script, you can extract features for all possible overlaps and splits in one shot with this script.
+
+```
+python batch_feature_extraction.py
+```
+
+* Update the parameters `dataset`, `overlap` and `split` in parameter.py script based on the downloaded dataset. You can now train the SELDnet using default parameters using
 ```
 python seld.py
 ```
 
-* Additionally, you can add/change parameters by using a unique identifier \<task-id\> in if-else loop as seen in the parameters.py script and call them as following
+* Additionally, you can add/change parameters by using a unique identifier \<task-id\> in if-else loop as seen in the parameter.py script and call them as following
 ```
 python seld.py <job-id> <task-id>
 ```
 Where \<job-id\> is a unique identifier which is used for output filenames (models, training plots). You can use any number or string for this.
+
+* By default, the code runs in `quick_test = True` mode. This trains the network for 2 epochs on only 2 mini-batches. Once you get to run the code sucessfully, set `quick_test = False` in parameter.py script and train on the entire data.
 
 ## License
 

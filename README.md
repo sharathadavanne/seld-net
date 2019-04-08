@@ -1,5 +1,8 @@
 
 # Sound event localization and detection of overlapping sources using convolutional recurrent neural network (SELDnet)
+
+[**Checkout the SELD challenge at DCASE 2019 here**](http://dcase.community/challenge2019/task-sound-event-localization-and-detection)
+
 Sound event localization and detection (SELD) is the combined task of identifying the temporal onset and offset of a sound event, tracking the spatial location when active, and further associating a textual label describing the sound event.
 The paper describing the SELDnet can be found on [IEEExplore](https://ieeexplore.ieee.org/document/8567942 'Paper on IEEE Xplore') and on [Arxiv](https://arxiv.org/pdf/1807.00129.pdf 'Paper on Arxiv'). We are releasing a simple vanila code without much frills and the related datasets here.
 The work presented in this paper is an extension of the previous multichannel sound event detection, and direction of arrival estimation papers listed below.
@@ -16,6 +19,7 @@ The work presented in this paper is an extension of the previous multichannel so
 If you are using this code or the datasets in any format, then please consider citing the following paper
 
 > Sharath Adavanne, Archontis Politis, Joonas Nikunen and Tuomas Virtanen, "Sound event localization and detection of overlapping sources using convolutional recurrent neural network" in IEEE Journal of Selected Topics in Signal Processing (JSTSP 2018)
+
 
 ## More about SELDnet
 The proposed SELDnet architecture is as shown below. The input is the multichannel audio, from which the phase and magnitude components are extracted and used as separate features. The proposed method takes a sequence of consecutive spectrogram frames as input and predicts all the sound event classes active for each of the input frame along with their respective spatial location, producing the temporal activity and DOA trajectory for each sound event class. In particular, a convolutional recurrent neural network (CRNN) is used to map the frame sequence to the two outputs in parallel. At the first output, SED is performed as a multi-label multi-class classification task, allowing the network to simultaneously estimate the presence of multiple sound events for each frame. At the second output, DOA estimates in the continuous 3D space are obtained as a multi-output regression task, where each sound event class is associated with three regressors that estimate the 3D Cartesian coordinates x, y and z of the DOA on a unit sphere around the microphone.

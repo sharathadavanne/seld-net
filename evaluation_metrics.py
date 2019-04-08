@@ -33,9 +33,16 @@ def f1_overall_framewise(O, T):
 def er_overall_framewise(O, T):
     if len(O.shape) == 3:
         O, T = reshape_3Dto2D(O), reshape_3Dto2D(T)
-    TP = ((2 * T - O) == 1).sum()  # axis=1)
-    Nref, Nsys = T.sum(), O.sum()
-    ER = (max(Nref, Nsys) - TP) / (Nref + 0.0)
+
+    FP = np.logical_and(T == 0, O == 1).sum(1)
+    FN = np.logical_and(T == 1, O == 0).sum(1)
+
+    S = np.minimum(FP, FN).sum()
+    D = np.maximum(0, FN-FP).sum()
+    I = np.maximum(0, FP-FN).sum()
+
+    Nref = T.sum()
+    ER = (S+D+I) / (Nref + 0.0)
     return ER
 
 
@@ -265,4 +272,3 @@ def compute_doa_scores_regr_xyz(pred, gt, pred_sed, gt_sed):
     # the accuracy wrt gt number of sources
     er_metric = [avg_accuracy, doa_loss_gt, doa_loss_pred, doa_loss_gt_cnt, doa_loss_pred_cnt, good_frame_cnt]
     return er_metric, conf_mat
-

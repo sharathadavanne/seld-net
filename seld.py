@@ -156,7 +156,6 @@ def main(argv):
             steps_per_epoch=2 if params['quick_test'] else data_gen_train.get_total_batches_in_data(),
             validation_data=data_gen_test.generate(),
             validation_steps=2 if params['quick_test'] else data_gen_test.get_total_batches_in_data(),
-            use_multiprocessing=True,
             epochs=1,
             verbose=0
         )
@@ -166,7 +165,6 @@ def main(argv):
         pred = model.predict_generator(
             generator=data_gen_test.generate(),
             steps=2 if params['quick_test'] else data_gen_test.get_total_batches_in_data(),
-            use_multiprocessing=True,
             verbose=2
         )
         if params['mode'] == 'regr':

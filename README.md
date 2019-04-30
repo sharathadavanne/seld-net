@@ -1,9 +1,9 @@
 
-# Sound event localization, detection, and tracking of multiple moving sources using convolutional recurrent neural network (SELDnet)
+# Sound event localization, detection, and tracking of multiple overlapping stationary and moving sources using convolutional recurrent neural network (SELDnet)
 
-[**Checkout the sound event localization and detection (SELD) challenge at DCASE 2019 here**](http://dcase.community/challenge2019/task-sound-event-localization-and-detection)
+[**Checkout the sound event localization and detection (SELD) challenge at DCASE 2019. This task includes dataset with stationary sources in multi-reverberant scenario.**](http://dcase.community/challenge2019/task-sound-event-localization-and-detection)
 
-Sound event localization, detection and tracking (SELDT) is the combined task of identifying the temporal onset and offset of a sound event, tracking the spatial location when active, and further associating a textual label describing the sound event. We first presented the SELDnet for static scenes with spatially stationary sources in [IEEExplore](https://ieeexplore.ieee.org/document/8567942 'Paper on IEEE Xplore') (also available on [Arxiv](https://arxiv.org/pdf/1807.00129.pdf 'Paper on Arxiv')). Thereafter, we presented the performance of SELDnet on dynamic scenes with sources moving with different angular velocities [here](). We are releasing a simple vanila code without much frills and the related datasets here.
+Sound event localization, detection and tracking (SELDT) is the combined task of identifying the temporal onset and offset of a sound event, tracking the spatial location when active, and further associating a textual label describing the sound event. We first presented the SELDnet for static scenes with spatially stationary sources in [IEEExplore](https://ieeexplore.ieee.org/document/8567942 'Paper on IEEE Xplore') (also available on [Arxiv](https://arxiv.org/pdf/1807.00129.pdf 'Paper on Arxiv')). Thereafter, we presented the performance of SELDnet on dynamic scenes with sources moving with different angular velocities [here](https://arxiv.org/pdf/1904.12769.pdf). We observed that the recurrent layers are crucial for tracking of sources, and perform comparable tracking as bayesian trackers such as RBMCDA particle filter ([Code available here](https://github.com/sharathadavanne/multiple-target-tracking)). We are releasing a simple vanila code without much frills and the related datasets here.
 The work presented in the two papers is an extension of the previous multichannel sound event detection, and direction of arrival estimation papers listed below.
 
 1. Sound event detection (SED)
@@ -20,7 +20,7 @@ If you are using this code or the datasets in any format, then please consider c
 > Sharath Adavanne, Archontis Politis, Joonas Nikunen, and Tuomas Virtanen, "Sound event localization and detection of overlapping sources using convolutional recurrent neural network" in IEEE Journal of Selected Topics in Signal Processing (JSTSP 2018)
 
 
-> Sharath Adavanne, Archontis Politis and Tuomas Virtanen, "Sound event localization, detection, and tracking of multiple moving sources using convolutional recurrent neural network" submitted in IEEE Workshop on Applications of Signal Processing to Audio and Acoustics (WASPAA 2019)
+> Sharath Adavanne, Archontis Politis and Tuomas Virtanen, "Localization, detection, and tracking of multiple moving sources using convolutional recurrent neural network" submitted in IEEE Workshop on Applications of Signal Processing to Audio and Acoustics (WASPAA 2019)
 
 
 ## More about SELDnet
@@ -47,7 +47,7 @@ The figure below visualizes the SELDnet input and outputs for simulated datasets
 Similarly, the figure below visualizes the SELDnet input and outputs for moving source dataset with maximum two temporally overlapping sound events.
 
 <p align="center">
-   <img src="https://github.com/sharathadavanne/seld-net/blob/master/images/movsrc_ov2_split1_v10_3d0_33028029.jpg" width="400" title="SELDnet output format">
+   <img src="https://github.com/sharathadavanne/seld-net/blob/master/images/movsrc_ov2_split1_v10_3d0_33028029.jpg" width="800" title="SELDnet output format">
 </p>
 
 

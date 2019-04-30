@@ -12,7 +12,7 @@ def get_params(argv):
         azi_only=True,      # Estimate Azimuth only
 
         # Dataset loading parameters
-        dataset='ansim',    # Dataset to use: ansim, resim, cansim, cresim, real
+        dataset='ansim',    # Dataset to use: ansim, resim, cansim, cresim, real, mansim or mreal
         overlap=1,         # maximum number of overlapping sound events [1, 2, 3]
         split=1,           # Cross validation split [1, 2, 3]
         db=30,             # SNR of sound events.

@@ -28,6 +28,10 @@ class FeatureClass:
             self._base_folder = os.path.join('/proj/asignal/TUT_SELD/', 'doa_circdata_echoic/')
         elif dataset == 'real':
             self._base_folder = os.path.join('/proj/asignal/TUT_SELD/', 'tut_seld_data/')
+        elif dataset == 'mansim':
+            self._base_folder = os.path.join('/proj/asignal/TUT_SELD/', 'moving_sound_events_foa/')
+        elif dataset == 'mreal':
+            self._base_folder = os.path.join('/proj/asignal/TUT_SELD/', 'tut_seld_movingdata_foa/')
 
         # Input directories
         self._aud_dir = os.path.join(self._base_folder, 'wav_ov{}_split{}_{}db{}'.format(ov, split, db, wav_extra_name))
@@ -91,6 +95,7 @@ class FeatureClass:
         self._frame_res = self._fs / float(self._hop_len)
         self._hop_len_s = self._nfft/2.0/self._fs
         self._nb_frames_1s = int(1 / self._hop_len_s)
+        self._fade_win_size = 0.01 * self._fs
 
         self._resolution = 10
         self._azi_list = range(-180, 180, self._resolution)
@@ -152,7 +157,8 @@ class FeatureClass:
     # OUTPUT LABELS
     def _read_desc_file(self, desc_filename):
         desc_file = {
-            'class': list(), 'start': list(), 'end': list(), 'ele': list(), 'azi': list(), 'dist': list()
+            'class': list(), 'start': list(), 'end': list(), 'ele': list(), 'azi': list(),
+            'ele_dir': list(), 'azi_dir': list(), 'ang_vel': list(), 'dist': list()
         }
         fid = open(os.path.join(self._desc_dir, desc_filename), 'r')
         fid.next()
@@ -164,9 +170,19 @@ class FeatureClass:
                 desc_file['class'].append(split_line[0].split('.')[0][:-3])
             desc_file['start'].append(int(np.floor(float(split_line[1])*self._frame_res)))
             desc_file['end'].append(int(np.ceil(float(split_line[2])*self._frame_res)))
-            desc_file['ele'].append(int(split_line[3]))
-            desc_file['azi'].append(int(split_line[4]))
-            desc_file['dist'].append(float(split_line[5]))
+            desc_file['ele'].append(int(float(split_line[3])))
+            desc_file['azi'].append(int(float(split_line[4])))
+            if self._dataset[0] is 'm':
+                if 'real' in self._dataset:
+                    desc_file['ang_vel'].append(int(float(split_line[5])))
+                    desc_file['dist'].append(float(split_line[6]))
+                else:
+                    desc_file['ele_dir'].append(int(float(split_line[5])))
+                    desc_file['azi_dir'].append(int(float(split_line[6])))
+                    desc_file['ang_vel'].append(int(float(split_line[7])))
+                    desc_file['dist'].append(float(split_line[8]))
+            else:
+                desc_file['dist'].append(float(split_line[5]))
         fid.close()
         return desc_file
 
@@ -185,19 +201,125 @@ class FeatureClass:
         azi = (ind * 10 + self._azi_list[0])
         return azi
 
+    @staticmethod
+    def scaled_cross_product(a, b):
+        ab = np.dot(a, b)
+        if ab > 1 or ab < -1:
+            return [999]
+
+        acos_ab = np.arccos(ab)
+        x = np.cross(a, b)
+        if acos_ab == np.pi or acos_ab == 0 or sum(x) == 0:
+            return [999]
+        else:
+            return x/np.sqrt(np.sum(x**2))
+
+    def get_trajectory(self, event_length_s, _start_xyz, _rot_vec, _random_ang_vel):
+        frames_per_sec = self._fs / self._fade_win_size
+        ang_vel_per_win = _random_ang_vel / frames_per_sec
+        nb_frames = int(np.ceil(event_length_s * frames_per_sec))
+        xyz_array = np.zeros((nb_frames, 3))
+        for frame in range(nb_frames):
+            _R = self.rotate_matrix_vec_ang(_rot_vec, frame * ang_vel_per_win)
+            xyz_array[frame, :] = np.dot(_start_xyz, _R.T)
+        return xyz_array
+
+
+    @staticmethod
+    def rotate_matrix_vec_ang(_rot_vec, theta):
+        u_x_u = np.array(
+            [
+                [_rot_vec[0] ** 2, _rot_vec[0] * _rot_vec[1], _rot_vec[0] * _rot_vec[2]],
+                [_rot_vec[1] * _rot_vec[0], _rot_vec[1] ** 2, _rot_vec[1] * _rot_vec[2]],
+                [_rot_vec[2] * _rot_vec[0], _rot_vec[2] * _rot_vec[1], _rot_vec[2] ** 2]
+            ]
+        )
+
+        u_x = np.array(
+            [
+                [0, -_rot_vec[2], _rot_vec[1]],
+                [_rot_vec[2], 0, -_rot_vec[0]],
+                [-_rot_vec[1], _rot_vec[0], 0]
+            ]
+        )
+        return np.eye(3) * np.cos(theta) + np.sin(theta) * u_x + (1 - np.cos(theta)) * u_x_u
+
+    @staticmethod
+    def sph2cart(az, el, r):
+        """
+        Converts spherical coordinates given by azimuthal, elevation and radius to cartesian coordinates of x, y and z
+
+        :param az: azimuth angle
+        :param el: elevation angle
+        :param r: radius
+        :return: cartesian coordinate
+        """
+        rcos_theta = r * np.cos(el)
+        x = rcos_theta * np.cos(az)
+        y = rcos_theta * np.sin(az)
+        z = r * np.sin(el)
+        return x, y, z
+
+    @staticmethod
+    def cart2sph(x, y, z):
+        XsqPlusYsq = x ** 2 + y ** 2
+        r = np.sqrt(XsqPlusYsq + z ** 2)  # r
+        elev = np.arctan2(z, np.sqrt(XsqPlusYsq))  # theta
+        az = np.arctan2(y, x)  # phi
+        return az, elev, r
+
+    @staticmethod
+    def wrapToPi(rad_list):
+        xwrap = np.remainder(rad_list, 2 * np.pi)
+        mask = np.abs(xwrap) > np.pi
+        xwrap[mask] -= 2 * np.pi * np.sign(xwrap[mask])
+        return xwrap
+
+    def wrapTo180(self, deg_list):
+        rad_list = deg_list * np.pi / 180.
+        rad_list = self.wrapToPi(rad_list)
+        deg_list = rad_list * 180 / np.pi
+        return deg_list
+
     def _get_doa_labels_regr(self, _desc_file):
         azi_label = self._default_azi*np.ones((self._max_frames, len(self._unique_classes)))
         ele_label = self._default_ele*np.ones((self._max_frames, len(self._unique_classes)))
         for i, ele_ang in enumerate(_desc_file['ele']):
             start_frame = _desc_file['start'][i]
+            if start_frame > self._max_frames:
+                continue
             end_frame = self._max_frames if _desc_file['end'][i] > self._max_frames else _desc_file['end'][i]
+            nb_frames = end_frame - start_frame
             azi_ang = _desc_file['azi'][i]
             class_ind = self._unique_classes[_desc_file['class'][i]]
-            if (azi_ang >= self._azi_list[0]) & (azi_ang <= self._azi_list[-1]) & \
-                    (ele_ang >= self._ele_list[0]) & (ele_ang <= self._ele_list[-1]):
-                azi_label[start_frame:end_frame + 1, class_ind] = azi_ang
-                ele_label[start_frame:end_frame + 1, class_ind] = ele_ang
+            if self._dataset[0] is 'm':
+                if 'real' in self._dataset:
+                    se_len_s = nb_frames / self._frame_res
+                    azi_trajectory = np.floor(
+                        np.linspace(azi_ang, azi_ang+_desc_file['ang_vel'][i]*se_len_s, nb_frames)
+                    )
+                    azi_ang = self.wrapTo180(azi_trajectory)
+
+                else:
+                    start_xyz = self.sph2cart(azi_ang*np.pi/180, ele_ang*np.pi/180, 1)
+                    direction_xyz = self.sph2cart(_desc_file['azi_dir'][i]*np.pi/180, _desc_file['ele_dir'][i]*np.pi/180, 1)
+
+                    rot_vec = self.scaled_cross_product(start_xyz, direction_xyz)
+                    xyz_trajectory = self.get_trajectory(
+                        nb_frames/self._frame_res, start_xyz, rot_vec, _desc_file['ang_vel'][i]*np.pi/180)
+
+                    tmp_azi_ang, tmp_ele_ang, tmp_r = self.cart2sph(
+                        xyz_trajectory[:, 0], xyz_trajectory[:, 1], xyz_trajectory[:, 2])
+                    org_time = np.linspace(0, 1, tmp_azi_ang.shape[0])
+                    new_time = np.linspace(0, 1, end_frame - start_frame)
+                    azi_ang = np.interp(new_time, org_time, tmp_azi_ang * 180/np.pi)
+                    ele_ang = np.interp(new_time, org_time, tmp_ele_ang * 180/np.pi)
+
+            if np.sum(ele_ang >= self._ele_list[0]) and np.sum(ele_ang <= self._ele_list[-1]):
+                azi_label[start_frame:end_frame, class_ind] = azi_ang
+                ele_label[start_frame:end_frame, class_ind] = ele_ang
             else:
+                # print(start_xyz, direction_xyz)
                 print('bad_angle {} {}'.format(azi_ang, ele_ang))
         doa_label_regr = np.concatenate((azi_label, ele_label), axis=1)
         return doa_label_regr

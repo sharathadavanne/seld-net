@@ -1,11 +1,10 @@
 
-# Sound event localization and detection of overlapping sources using convolutional recurrent neural network (SELDnet)
+# Sound event localization, detection, and tracking of multiple moving sources using convolutional recurrent neural network (SELDnet)
 
-[**Checkout the SELD challenge at DCASE 2019 here**](http://dcase.community/challenge2019/task-sound-event-localization-and-detection)
+[**Checkout the sound event localization and detection (SELD) challenge at DCASE 2019 here**](http://dcase.community/challenge2019/task-sound-event-localization-and-detection)
 
-Sound event localization and detection (SELD) is the combined task of identifying the temporal onset and offset of a sound event, tracking the spatial location when active, and further associating a textual label describing the sound event.
-The paper describing the SELDnet can be found on [IEEExplore](https://ieeexplore.ieee.org/document/8567942 'Paper on IEEE Xplore') and on [Arxiv](https://arxiv.org/pdf/1807.00129.pdf 'Paper on Arxiv'). We are releasing a simple vanila code without much frills and the related datasets here.
-The work presented in this paper is an extension of the previous multichannel sound event detection, and direction of arrival estimation papers listed below.
+Sound event localization, detection and tracking (SELDT) is the combined task of identifying the temporal onset and offset of a sound event, tracking the spatial location when active, and further associating a textual label describing the sound event. We first presented the SELDnet for static scenes with spatially stationary sources in [IEEExplore](https://ieeexplore.ieee.org/document/8567942 'Paper on IEEE Xplore') (also available on [Arxiv](https://arxiv.org/pdf/1807.00129.pdf 'Paper on Arxiv')). Thereafter, we presented the performance of SELDnet on dynamic scenes with sources moving with different angular velocities [here](). We are releasing a simple vanila code without much frills and the related datasets here.
+The work presented in the two papers is an extension of the previous multichannel sound event detection, and direction of arrival estimation papers listed below.
 
 1. Sound event detection (SED)
    - Sharath Adavanne, Giambattista Parascandolo, Pasi Pertila, Toni Heittola and Tuomas Virtanen, '[Sound event detection in multichannel audio using spatial and harmonic features](https://arxiv.org/abs/1706.02293 "Paper on arxiv.org")' at *Detection and Classification of Acoustic Scenes and Events (DCASE 2016)*
@@ -16,9 +15,12 @@ The work presented in this paper is an extension of the previous multichannel so
    - Sharath Adavanne, Archontis Politis and Tuomas Virtanen, '[Direction of arrival estimation for multiple sound sources using convolutional recurrent neural network](https://arxiv.org/abs/1710.10059  "Paper on arxiv.org")' at *European Signal Processing Conference (EUSIPCO 2018)*
    
    
-If you are using this code or the datasets in any format, then please consider citing the following paper
+If you are using this code or the datasets in any format, then please consider citing the following papers
 
-> Sharath Adavanne, Archontis Politis, Joonas Nikunen and Tuomas Virtanen, "Sound event localization and detection of overlapping sources using convolutional recurrent neural network" in IEEE Journal of Selected Topics in Signal Processing (JSTSP 2018)
+> Sharath Adavanne, Archontis Politis, Joonas Nikunen, and Tuomas Virtanen, "Sound event localization and detection of overlapping sources using convolutional recurrent neural network" in IEEE Journal of Selected Topics in Signal Processing (JSTSP 2018)
+
+
+> Sharath Adavanne, Archontis Politis and Tuomas Virtanen, "Sound event localization, detection, and tracking of multiple moving sources using convolutional recurrent neural network" submitted in IEEE Workshop on Applications of Signal Processing to Audio and Acoustics (WASPAA 2019)
 
 
 ## More about SELDnet
@@ -34,15 +36,23 @@ The SED output of the network is in the continuous range of [0 1] for each sound
    <img src="https://github.com/sharathadavanne/seld-net/blob/master/images/JSTSP_output_format.jpg" width="400" title="SELDnet output format">
 </p>
 
-The figure below visualizes the SELDnet input and outputs for simulated datasets with maximum one (O1) and two (O2) temporally overlapping sound events. The horizontal-axis of all sub-plots for a given dataset represents the same time frames, the vertical-axis for spectrogram sub-plot represents the frequency bins, vertical-axis for SED reference and prediction sub-plots represents the unique sound event class identifier, and for the DOA reference and prediction sub-plots, it represents the distance from the origin along the respective axes. The 'o' markers in left figure and '•' markers in right figure visualize both the groundtruth labels and predictions of DOA and SED for O1 and O2 datasets. The − markers in the left figure visualizes the results for test data with unseen DOA labels (shifted by 5 degree along azimuth and elevation). The figures represents each sound event class and its associated DOA outputs with a unique color.
+The figure below visualizes the SELDnet input and outputs for simulated datasets with maximum one (O1) and two (O2) temporally overlapping and stationary sound events. The horizontal-axis of all sub-plots for a given dataset represents the same time frames, the vertical-axis for spectrogram sub-plot represents the frequency bins, vertical-axis for SED reference and prediction sub-plots represents the unique sound event class identifier, and for the DOA reference and prediction sub-plots, it represents the distance from the origin along the respective axes. The 'o' markers in left figure and '•' markers in right figure visualize both the groundtruth labels and predictions of DOA and SED for O1 and O2 datasets. The − markers in the left figure visualizes the results for test data with unseen DOA labels (shifted by 5 degree along azimuth and elevation). The figures represents each sound event class and its associated DOA outputs with a unique color.
 
 <p align="center">
    <img src="https://github.com/sharathadavanne/seld-net/blob/master/images/echoic0_ov1_split1_regr3_3d0_19465735_plus5.jpg" width="400" title="dataset with maximum one (O1) temporally overlapping sound events">
    <img src="https://github.com/sharathadavanne/seld-net/blob/master/images/echoic0_ov2_split1_regr3_3d0_19425208.jpg" width="400" title="dataset with maximum two (O2) temporally overlapping sound events">
 </p>
 
+
+Similarly, the figure below visualizes the SELDnet input and outputs for moving source dataset with maximum two temporally overlapping sound events.
+
+<p align="center">
+   <img src="https://github.com/sharathadavanne/seld-net/blob/master/images/movsrc_ov2_split1_v10_3d0_33028029.jpg" width="400" title="SELDnet output format">
+</p>
+
+
 ## DATASETS
-We are releasing all the simulated datasets and the small real-life dataset without ambiance used in the paper on zenodo.org. These datasets are in the range of 30-45 GB and fit within the dataset budget of zenodo.org. The larger datasets can be shared upon request. All of these datasets consist of stationary point sources each associated with a spatial coordinate.
+We are releasing all the simulated datasets and the small real-life dataset without ambiance used in the paper on zenodo.org. These datasets are in the range of 30-45 GB and fit within the dataset budget of zenodo.org. The larger datasets can be shared upon request. The first five datasets consist of stationary point sources each associated with a spatial coordinate. Whereas the last two datasets consists of moving point sources with varying angular velocities.
 
 The datasets released are
 1. ANSIM (TUT Sound Events 2018 - Ambisonic, Anechoic and Synthetic Impulse Response Dataset) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1237703.svg)](https://doi.org/10.5281/zenodo.1237703)
@@ -51,8 +61,13 @@ The datasets released are
 4. CRESIM (TUT Sound Events 2018 - Circular array, Reverberant and Synthetic Impulse Response Dataset) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1237754.svg)](https://doi.org/10.5281/zenodo.1237754)
 5. REAL (TUT Sound Events 2018 - Ambisonic, Reverberant and Real-life Impulse Response Dataset) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1237793.svg)](https://doi.org/10.5281/zenodo.1237793) 
     - Real-life impulse responses to simulate custom SELD datasets [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1443539.svg)](https://doi.org/10.5281/zenodo.1443539)
+6. MANSIM (TAU Moving Sound Events 2019 - Ambisonic, Anechoic, Synthetic Impulse Response and Moving Sources Dataset) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.2636586.svg)](https://doi.org/10.5281/zenodo.2636586)
+7. MREAL (TAU Moving Sound Events 2019 - Ambisonic, Reverberant, Real-life Impulse Response and Moving Sources Dataset) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.2636594.svg)](https://doi.org/10.5281/zenodo.2636594) 
 
 All the datasets contain three sub-datasets with maximum one (ov1), two (ov2) and three (ov3) temporally overlapping sound events. Each of these sub-datasets have three cross-validation splits (split1, split2 and split3). In total each dataset has nine splits saved as separate zip files. In order to test the SELDnet code you don't have to download the entire dataset. You can simply download one of the zip files and train the SELDnet for the respective overlap (ov) and split (split).
+
+## Baseling tracking method
+In order to compare the tracking performance of SELDnet, we used the parameteric method comprising of MUSIC for frame-wise DOA estimation and particle filter with Rao-Blackwellized Monte Carlo Data Association (RBMCDA). This RBMCDA particle filter has also been made publicly available [here.](https://github.com/sharathadavanne/multiple-target-tracking) 
 
 ## Getting Started
 

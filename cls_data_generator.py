@@ -84,11 +84,11 @@ class DataGenerator(object):
 
         temp_feat = np.load(os.path.join(self._feat_dir, self._filenames_list[0]))
         self._nb_frames_file = temp_feat.shape[0]
-        self._feat_len = temp_feat.shape[1] / self._2_nb_ch
+        self._feat_len = temp_feat.shape[1] // self._2_nb_ch
 
         temp_label = np.load(os.path.join(self._label_dir, self._filenames_list[0]))
         self._label_len = temp_label.shape[-1]
-        self._doa_len = (self._label_len - self._nb_classes)/self._nb_classes
+        self._doa_len = (self._label_len - self._nb_classes)//self._nb_classes
         return
 
     def generate(self):
@@ -178,15 +178,15 @@ class DataGenerator(object):
         if len(data.shape) == 1:
             if data.shape[0] % self._seq_len:
                 data = data[:-(data.shape[0] % self._seq_len), :]
-            data = data.reshape((data.shape[0] / self._seq_len, self._seq_len, 1))
+            data = data.reshape((data.shape[0] // self._seq_len, self._seq_len, 1))
         elif len(data.shape) == 2:
             if data.shape[0] % self._seq_len:
                 data = data[:-(data.shape[0] % self._seq_len), :]
-            data = data.reshape((data.shape[0] / self._seq_len, self._seq_len, data.shape[1]))
+            data = data.reshape((data.shape[0] // self._seq_len, self._seq_len, data.shape[1]))
         elif len(data.shape) == 3:
             if data.shape[0] % self._seq_len:
                 data = data[:-(data.shape[0] % self._seq_len), :, :]
-            data = data.reshape((data.shape[0] / self._seq_len, self._seq_len, data.shape[1], data.shape[2]))
+            data = data.reshape((data.shape[0] // self._seq_len, self._seq_len, data.shape[1], data.shape[2]))
         else:
             print('ERROR: Unknown data dimensions: {}'.format(data.shape))
             exit()
@@ -197,7 +197,7 @@ class DataGenerator(object):
         tmp = None
         in_shape = data.shape
         if len(in_shape) == 3:
-            hop = in_shape[2] / num_channels
+            hop = in_shape[2] // num_channels
             tmp = np.zeros((in_shape[0], num_channels, in_shape[1], hop))
             for i in range(num_channels):
                 tmp[:, i, :, :] = data[:, :, i * hop:(i + 1) * hop]

@@ -19,7 +19,7 @@ class FeatureClass:
         # TODO: Change the path according to your machine.
         # TODO: It should point to a folder which consists of sub-folders for audio and metada
         if dataset == 'ansim':
-            self._base_folder = os.path.join('/wrk/adavanne/DONOTREMOVE', 'doa_data/')
+            self._base_folder = os.path.join('/scratch/asignal/sharath', 'doa_data/')
         elif dataset == 'resim':
             self._base_folder = os.path.join('/proj/asignal/TUT_SELD/', 'doa_data_echoic/')
         elif dataset == 'cansim':
@@ -49,7 +49,7 @@ class FeatureClass:
         self._db = db
         self._nfft = nfft
         self._win_len = self._nfft
-        self._hop_len = self._nfft/2
+        self._hop_len = self._nfft//2
         self._dataset = dataset
         self._eps = np.spacing(np.float(1e-16))
 
@@ -140,7 +140,7 @@ class FeatureClass:
     def _spectrogram(self, audio_input):
         _nb_ch = audio_input.shape[1]
         hann_win = np.repeat(np.hanning(self._win_len)[np.newaxis].T, _nb_ch, 1)
-        nb_bins = self._nfft / 2
+        nb_bins = self._nfft // 2
         spectra = np.zeros((self._max_frames, nb_bins, _nb_ch), dtype=complex)
         for ind in range(self._max_frames):
             start_ind = ind * self._hop_len
@@ -161,7 +161,7 @@ class FeatureClass:
             'ele_dir': list(), 'azi_dir': list(), 'ang_vel': list(), 'dist': list()
         }
         fid = open(os.path.join(self._desc_dir, desc_filename), 'r')
-        fid.next()
+        next(fid)
         for line in fid:
             split_line = line.strip().split(',')
             if 'real' in self._dataset:

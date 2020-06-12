@@ -89,7 +89,7 @@ If you are only interested in the SELDnet model then just check the keras_model.
 
 ### Prerequisites
 
-The requirements.txt file consists of the libraries and their versions used. The Python script is written and tested in 2.7.10 version. You can install the requirements by running the following line
+The requirements.txt file consists of the libraries and their versions used. The Python script is written and tested in 3.7.3 version. You can install the requirements by running the following line
 
 ```
 pip install -r requirements.txt

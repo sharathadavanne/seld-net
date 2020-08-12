@@ -215,7 +215,7 @@ def main(argv):
     print('saved model for the best_epoch: {} with best_metric: {},  '.format(best_epoch, best_metric))
     print('DOA Metrics: doa_loss_gt: {}, doa_loss_pred: {}, good_pks_ratio: {}'.format(
         doa_loss[best_epoch, 1], doa_loss[best_epoch, 2], doa_loss[best_epoch, 5] / float(sed_gt.shape[0])))
-    print('SED Metrics: ER_overall: {}, F1_overall: {}'.format(sed_loss[best_epoch, 1], sed_loss[best_epoch, 0]))
+    print('SED Metrics: F1_overall: {}, ER_overall: {}'.format(sed_loss[best_epoch, 1], sed_loss[best_epoch, 0]))
     print('unique_name: {} '.format(unique_name))
 
 
